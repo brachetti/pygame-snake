@@ -1,3 +1,4 @@
+from ast import main
 from cgi import print_form
 from curses import KEY_DOWN, echo
 from mimetypes import init
@@ -73,20 +74,42 @@ class Snake:
             self.direction = "left"
         if event.key == pygame.K_RIGHT and self.direction != "left":
             self.direction = "right"
-        
+
+    def fruit_collission(self, fruit):
+        if self.body[0] == fruit.position:
+            print("worlds collide!")
 
 class Fruit:
     color = (126, 166, 114)
 
     def __init__(self) -> None:
-        position = Vector2(
+        self.position = Vector2(
             random.randint(0, CELL_NUMBER - 1), 
             random.randint(0, CELL_NUMBER - 1)
         )
-        self.block = Block(position, Fruit.color)
+        self.block = Block(self.position, Fruit.color)
     
     def draw(self):
         self.block.draw_block()
+
+class Main:
+    def __init__(self) -> None:
+        self.snake = Snake()
+        self.fruit = Fruit()
+
+    def update(self):
+        self.snake.move_snake()
+        self.check_collision()
+
+    def draw(self):
+        self.fruit.draw()
+        self.snake.draw()
+
+    def move_snake(self, event):
+        self.snake.change_direction(event)
+
+    def check_collision(self):
+        self.snake.fruit_collission(self.fruit)
 
 pygame.init()
 screen = pygame.display.set_mode((CELL_SIZE*CELL_NUMBER, CELL_SIZE*CELL_NUMBER))
@@ -94,8 +117,7 @@ clock = pygame.time.Clock()
 SCREEN_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(SCREEN_UPDATE, 150)
 
-fruit = Fruit()
-snake = Snake()
+main_game = Main()
 
 while True:
     for event in pygame.event.get():
@@ -104,15 +126,14 @@ while True:
             sys.exit()      
 
         if event.type == SCREEN_UPDATE:
-            snake.move_snake()
+            main_game.update()
 
         if event.type == pygame.KEYDOWN:
-            snake.change_direction(event)
+            main_game.move_snake(event)
 
     # draw all our elements
     screen.fill(surface_bg)
-    fruit.draw()
-    snake.draw()
+    main_game.draw()
     
     pygame.display.update()
     clock.tick(FRAMERATE)
