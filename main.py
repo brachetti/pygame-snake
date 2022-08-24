@@ -39,6 +39,7 @@ class Snake:
             Vector2(7, 10),
         ]
         self.direction = "up"
+        self.ate_fruit = False
     
     def blocks(self):
         return [
@@ -61,7 +62,12 @@ class Snake:
         if self.direction == "right":
             direction = Vector2(1, 0)
         
-        body = self.body[:-1]
+        if self.ate_fruit:
+            body = self.body[:]
+            self.ate_fruit = False
+        else:
+            body = self.body[:-1]
+        
         body.insert(0, body[0] + direction)
         self.body = body[:]
 
@@ -77,20 +83,24 @@ class Snake:
 
     def fruit_collission(self, fruit):
         if self.body[0] == fruit.position:
-            print("worlds collide!")
+            fruit.reposition()
+            self.ate_fruit = True
 
 class Fruit:
     color = (126, 166, 114)
 
     def __init__(self) -> None:
+        self.reposition()
+    
+    def draw(self):
+        block = Block(self.position, Fruit.color)
+        block.draw_block()
+
+    def reposition(self):
         self.position = Vector2(
             random.randint(0, CELL_NUMBER - 1), 
             random.randint(0, CELL_NUMBER - 1)
         )
-        self.block = Block(self.position, Fruit.color)
-    
-    def draw(self):
-        self.block.draw_block()
 
 class Main:
     def __init__(self) -> None:
