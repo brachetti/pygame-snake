@@ -8,6 +8,8 @@ FRAMERATE = 60
 CELL_SIZE = 40
 CELL_NUMBER = 20
 
+surface_bg = (175,215,70)
+
 class Block:
     def __init__(self, position, color) -> None:
         self.position = position
@@ -25,6 +27,8 @@ class Block:
         pygame.draw.rect(screen, self.color, self.__rect())
 
 class Snake:
+    color = (183, 111, 122)
+    
     def __init__(self) -> None:
         self.body = [
             Vector2(5, 10),
@@ -32,7 +36,7 @@ class Snake:
             Vector2(7, 10),
         ]
         self.blocks = [
-            Block(position, (255, 0, 0))
+            Block(position, Snake.color)
             for position in self.body
         ]
     
@@ -41,12 +45,14 @@ class Snake:
             block.draw_block()
 
 class Fruit:
+    color = (126, 166, 114)
+
     def __init__(self) -> None:
         position = Vector2(
             random.randint(0, CELL_NUMBER - 1), 
             random.randint(0, CELL_NUMBER - 1)
         )
-        self.block = Block(position, (126, 166, 114))
+        self.block = Block(position, Fruit.color)
     
     def draw(self):
         self.block.draw_block()
@@ -54,7 +60,7 @@ class Fruit:
 pygame.init()
 screen = pygame.display.set_mode((CELL_SIZE*CELL_NUMBER, CELL_SIZE*CELL_NUMBER))
 clock = pygame.time.Clock()
-screen.fill((175,215,70))
+screen.fill(surface_bg)
 
 fruit = Fruit()
 snake = Snake()
