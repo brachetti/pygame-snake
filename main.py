@@ -86,6 +86,15 @@ class Snake:
             fruit.reposition()
             self.ate_fruit = True
 
+    def is_outside(self):
+        head = self.body[0]
+        return head.x <= 0 or head.x == CELL_NUMBER or head.y <= 0 or head.y == CELL_NUMBER
+
+    def hits_itself(self):
+        head = self.body[0]
+        body = self.body[1:]
+        return head in body
+
 class Fruit:
     color = (126, 166, 114)
 
@@ -106,6 +115,7 @@ class Main:
     def __init__(self) -> None:
         self.snake = Snake()
         self.fruit = Fruit()
+        self.game_over = False
 
     def update(self):
         self.snake.move_snake()
@@ -120,6 +130,13 @@ class Main:
 
     def check_collision(self):
         self.snake.fruit_collission(self.fruit)
+        
+        if self.snake.is_outside():
+            self.game_over = True
+
+        if self.snake.hits_itself():
+            self.game_over = True
+
 
 pygame.init()
 screen = pygame.display.set_mode((CELL_SIZE*CELL_NUMBER, CELL_SIZE*CELL_NUMBER))
@@ -130,6 +147,10 @@ pygame.time.set_timer(SCREEN_UPDATE, 150)
 main_game = Main()
 
 while True:
+    if main_game.game_over:
+        pygame.quit()
+        sys.exit()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
